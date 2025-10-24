@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tick - Control de Tickets de Compra</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --primary-dark: #5A52D9;
+            --secondary: #FF6584;
+            --success: #4CAF50;
+            --info: #2196F3;
+            --warning: #FF9800;
+            --danger: #F44336;
+            --light: #F8F9FA;
+            --dark: #212529;
+            --gray: #6C757D;
+            --light-gray: #E9ECEF;
+            --card-bg: #FFFFFF;
+            --body-bg: #F5F7FB;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 16px;
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --primary: #7B74FF;
+            --primary-dark: #6A63E6;
+            --secondary: #FF758C;
+            --light: #2D3748;
+            --dark: #E2E8F0;
+            --gray: #A0AEC0;
+            --light-gray: #4A5568;
+            --card-bg: #2D3748;
+            --body-bg: #1A202C;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--body-bg);
+            color: var(--dark);
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .app-container {
+            max-width: 100%;
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            background: var(--card-bg);
+            color: var(--dark);
+            padding: 1rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--gray);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        main {
+            padding: 1.5rem;
+            padding-bottom: 80px;
+        }
+
+        /* Tab Navigation */
+        .tabs-container {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow-x: auto;
+            padding: 5px;
+            box-shadow: var(--shadow);
+            scrollbar-width: none;
+        }
+
+        .tabs::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            color: var(--gray);
+            border-radius: 12px;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tab i {
+            font-size: 1.2rem;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            background: rgba(108, 99, 255, 0.1);
+        }
+
+        .tab-badge {
+            background: var(--secondary);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        /* Card Styles */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(108, 99, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            text-align: center;
+            justify-content: center;
+        }
+
+        /* Scanner Styles */
+        .scanner-container {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .scanner-placeholder {
+            background: var(--light);
+            height: 250px;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            color: var(--gray);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scanner-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(255, 101, 132, 0.1));
+        }
+
+        .scanner-placeholder i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            z-index: 1;
+        }
+
+        .scanner-placeholder p {
+            z-index: 1;
+        }
+
+        /* Ticket List */
+        .ticket-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .ticket-item:last-child {
+            border-bottom: none;
+        }
+
+        .ticket-item:hover {
+            background: var(--light);
+            border-radius: 10px;
+        }
+
+        .ticket-info h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .ticket-info p {
+            color: var(--gray);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ticket-amount {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stat-card:nth-child(2) {
+            border-left-color: var(--secondary);
+        }
+
+        .stat-card:nth-child(3) {
+            border-left-color: var(--success);
+        }
+
+        .stat-card:nth-child(4) {
+            border-left-color: var(--info);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .stat-card:nth-child(2) .stat-value {
+            color: var(--secondary);
+        }
+
+        .stat-card:nth-child(3) .stat-value {
+            color: var(--success);
+        }
+
+        .stat-card:nth-child(4) .stat-value {
+            color: var(--info);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.85rem;
+        }
+
+        /* Chart Placeholder */
+        .chart-placeholder {
+            background: var(--light);
+            height: 200px;
+            border-radius: var(--radius);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chart-placeholder::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(255, 101, 132, 0.1));
+        }
+
+        .chart-placeholder i {
+            font-size: 3rem;
+            z-index: 1;
+        }
+
+        /* Family Members */
+        .members-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .member-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary);
+        }
+
+        .member-card:nth-child(2) {
+            border-top-color: var(--secondary);
+        }
+
+        .member-card:nth-child(3) {
+            border-top-color: var(--success);
+        }
+
+        .member-card:nth-child(4) {
+            border-top-color: var(--info);
+        }
+
+        .member-avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 4px 10px rgba(108, 99, 255, 0.3);
+        }
+
+        .member-card:nth-child(2) .member-avatar {
+            background: linear-gradient(135deg, var(--secondary), #FF4D6D);
+        }
+
+        .member-card:nth-child(3) .member-avatar {
+            background: linear-gradient(135deg, var(--success), #45a049);
+        }
+
+        .member-card:nth-child(4) .member-avatar {
+            background: linear-gradient(135deg, var(--info), #1E88E5);
+        }
+
+        .member-card h3 {
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .member-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Shopping List */
+        .shopping-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--light-gray);
+            transition: var(--transition);
+        }
+
+        .shopping-item:last-child {
+            border-bottom: none;
+        }
+
+        .shopping-item:hover {
+            padding-left: 10px;
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .item-checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--light-gray);
+            cursor: pointer;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .item-checkbox:checked {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .item-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: var(--card-bg);
+            color: var(--dark);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 800px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .members-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .tabs {
+                justify-content: center;
+            }
+            
+            .tab {
+                min-width: 140px;
+            }
+        }
+
+        /* PWA Install Prompt */
+        .install-prompt {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            color: var(--dark);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-top-left-radius: var(--radius);
+            border-top-right-radius: var(--radius);
+        }
+
+        .install-prompt.hidden {
+            display: none;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4);
+            cursor: pointer;
+            z-index: 99;
+            transition: var(--transition);
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-receipt"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Tick</h1>
+                    <p>Control de gastos familiar</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="icon-btn">
+                    <i class="fas fa-bell"></i>
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <div class="tabs-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="scanner">
+                        <i class="fas fa-camera"></i>
+                        <span>Escanear</span>
+                    </div>
+                    <div class="tab" data-tab="tickets">
+                        <i class="fas fa-receipt"></i>
+                        <span>Tickets</span>
+                        <span class="tab-badge">5</span>
+                    </div>
+                    <div class="tab" data-tab="analytics">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Análisis</span>
+                    </div>
+                    <div class="tab" data-tab="family">
+                        <i class="fas fa-users"></i>
+                        <span>Familia</span>
+                    </div>
+                    <div class="tab" data-tab="shopping">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Lista</span>
+                        <span class="tab-badge">3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scanner Tab -->
+            <div id="scanner" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-camera"></i>
+                            Escanear Ticket
+                        </h2>
+                    </div>
+                    <div class="scanner-container">
+                        <div class="scanner-placeholder">
+                            <i class="fas fa-camera"></i>
+                            <p>Enfoca el ticket dentro del área</p>
+                            <p><small>El OCR extraerá automáticamente los datos</small></p>
+                        </div>
+                        <button class="btn btn-primary btn-block" id="scanBtn">
+                            <i class="fas fa-camera"></i> Escanear con Cámara
+                        </button>
+                        <p style="margin: 1rem 0; text-align: center; color: var(--gray);">o</p>
+                        <button class="btn btn-secondary btn-block">
+                            <i class="fas fa-upload"></i> Subir Imagen
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-keyboard"></i>
+                            Ingreso Manual
+                        </h2>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Establecimiento</label>
+                        <input type="text" class="form-control" placeholder="Nombre del establecimiento">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Fecha de Compra</label>
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Total</label>
+                        <input type="number" class="form-control" placeholder="0.00" step="0.01">
+                    </div>
+                    <button class="btn btn-primary btn-block">
+                        <i class="fas fa-save"></i> Guardar Ticket
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tickets Tab -->
+            <div id="tickets" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-history"></i>
+                            Tickets Recientes
+                        </h2>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                    </div>
+                    <div class="ticket-list">
+                        <div class="ticket-item">
+                            <div class="ticket-info">
+                                <h3>Supermercado Central</h3>
+                                <p><i class="far fa-calendar"></i> 15 Oct 2023 • <i class="fas fa-cube"></i> 12 artículos</p>
+                            </div>
+                            <div class="ticket-amount">€85.40</div>
+                        </div>
+                        <div class="ticket-item">
+                            <div class="ticket-info">
+                                <h3>Farmacia Salud</h3>
+                                <p><i class="far fa-calendar"></i> 14 Oct 2023 • <i class="fas fa-cube"></i> 3 artículos</p>
+                            </div>
+                            <div class="ticket-amount">€24.15</div>
+                        </div>
+                        <div class="ticket-item">
+                            <div class="ticket-info">
+                                <h3>Tienda Electrónica</h3>
+                                <p><i class="far fa-calendar"></i> 12 Oct 2023 • <i class="fas fa-cube"></i> 1 artículo</p>
+                            </div>
+                            <div class="ticket-amount">€129.99</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-file-export"></i>
+                            Exportar Datos
+                        </h2>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-success" style="flex: 1;">
+                            <i class="fas fa-file-excel"></i> Excel
+                        </button>
+                        <button class="btn btn-primary" style="flex: 1;">
+                            <i class="fas fa-file-csv"></i> CSV
+                        </button>
+                        <button class="btn btn-danger" style="flex: 1;">
+                            <i class="fas fa-file-pdf"></i> PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div id="analytics" class="tab-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Gasto Mensual</div>
+                        <div class="stat-value">€342</div>
+                        <div class="stat-label">+5% vs mes anterior</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Tickets Escaneados</div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">este mes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Ahorro Estimado</div>
+                        <div class="stat-value">€45</div>
+                        <div class="stat-label">con recomendaciones</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Categoría Principal</div>
+                        <div class="stat-value">Alimentos</div>
+                        <div class="stat-label">42% del gasto</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Distribución de Gastos
+                        </h2>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Análisis Comparativo
+                        </h2>
+                    </div>
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Family Tab -->
+            <div id="family" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-users"></i>
+                            Miembros de la Familia
+                        </h2>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                    <div class="members-grid">
+                        <div class="member-card">
+                            <div class="member-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3>Juan</h3>
+                            <p>Padre</p>
+                            <div class="stat-value">€142</div>
+                            <div class="stat-label">gasto mensual</div>
+                        </div>
+                        <div class="member-card">
+                            <div class="member-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3>María</h3>
+                            <p>Madre</p>
+                            <div class="stat-value">€98</div>
+                            <div class="stat-label">gasto mensual</div>
+                        </div>
+                        <div class="member-card">
+                            <div class="member-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h3>Luis</h3>
+                            <p>Hijo</p>
+                            <div class="stat-value">€65</div>
+                            <div class="stat-label">gasto mensual</div>
+                        </div>
+                        <div class="member-card">
+                            <div class="member-avatar">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <h3>Agregar</h3>
+                            <p>Nuevo miembro</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-receipt"></i>
+                            Asignación de Gastos
+                        </h2>
+                    </div>
+                    <div class="ticket-item">
+                        <div class="ticket-info">
+                            <h3>Compra Supermercado</h3>
+                            <p>15 Oct 2023 • €85.40</p>
+                        </div>
+                        <div>
+                            <select class="form-control">
+                                <option>Sin asignar</option>
+                                <option>Juan</option>
+                                <option>María</option>
+                                <option>Luis</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ticket-item">
+                        <div class="ticket-info">
+                            <h3>Farmacia</h3>
+                            <p>14 Oct 2023 • €24.15</p>
+                        </div>
+                        <div>
+                            <select class="form-control">
+                                <option>Sin asignar</option>
+                                <option>Juan</option>
+                                <option selected>María</option>
+                                <option>Luis</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shopping List Tab -->
+            <div id="shopping" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-shopping-cart"></i>
+                            Lista de la Compra
+                        </h2>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                    <div class="shopping-list">
+                        <div class="shopping-item">
+                            <div class="item-info">
+                                <input type="checkbox" class="item-checkbox">
+                                <span>Leche</span>
+                            </div>
+                            <div>
+                                <span class="ticket-amount">2 unidades</span>
+                            </div>
+                        </div>
+                        <div class="shopping-item">
+                            <div class="item-info">
+                                <input type="checkbox" class="item-checkbox">
+                                <span>Pan</span>
+                            </div>
+                            <div>
+                                <span class="ticket-amount">1 unidad</span>
+                            </div>
+                        </div>
+                        <div class="shopping-item">
+                            <div class="item-info">
+                                <input type="checkbox" class="item-checkbox" checked>
+                                <span style="text-decoration: line-through; color: var(--gray);">Huevos</span>
+                            </div>
+                            <div>
+                                <span class="ticket-amount" style="text-decoration: line-through; color: var(--gray);">12 unidades</span>
+                            </div>
+                        </div>
+                        <div class="shopping-item">
+                            <div class="item-info">
+                                <input type="checkbox" class="item-checkbox">
+                                <span>Manzanas</span>
+                            </div>
+                            <div>
+                                <span class="ticket-amount">1 kg</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Recomendaciones
+                        </h2>
+                    </div>
+                    <p style="margin-bottom: 1rem; color: var(--gray);">Basado en tus compras anteriores, te recomendamos:</p>
+                    <div class="shopping-item">
+                        <div class="item-info">
+                            <input type="checkbox" class="item-checkbox">
+                            <span>Aceite de Oliva</span>
+                        </div>
+                        <div>
+                            <small style="color: var(--gray);">Última compra: hace 3 semanas</small>
+                        </div>
+                    </div>
+                    <div class="shopping-item">
+                        <div class="item-info">
+                            <input type="checkbox" class="item-checkbox">
+                            <span>Arroz</span>
+                        </div>
+                        <div>
+                            <small style="color: var(--gray);">Última compra: hace 4 semanas</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Floating Action Button -->
+        <div class="fab">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+
+    <!-- PWA Install Prompt -->
+    <div class="install-prompt hidden" id="installPrompt">
+        <div>
+            <strong>Instalar Tick</strong>
+            <p>Para una mejor experiencia, instala la aplicación</p>
+        </div>
+        <button class="btn btn-primary" id="installBtn">Instalar</button>
+    </div>
+
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and contents
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab
+                tab.classList.add('active');
+                
+                // Show corresponding content
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const icon = themeToggle.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        });
+
+        // Simulate OCR Processing
+        document.getElementById('scanBtn').addEventListener('click', function() {
+            const scannerPlaceholder = document.querySelector('.scanner-placeholder');
+            const originalHTML = scannerPlaceholder.innerHTML;
+            
+            // Show loading
+            scannerPlaceholder.innerHTML = '<div class="spinner"></div><p>Procesando imagen...</p>';
+            
+            // Simulate processing delay
+            setTimeout(() => {
+                scannerPlaceholder.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                    <p>Ticket procesado correctamente</p>
+                    <p><small>Se detectaron 12 artículos</small></p>
+                `;
+                
+                // Show ticket details after a moment
+                setTimeout(() => {
+                    alert('Ticket procesado: Supermercado Central - Total: €85.40 - 12 artículos detectados');
+                    scannerPlaceholder.innerHTML = originalHTML;
+                }, 1500);
+            }, 2000);
+        });
+
+        // Shopping List Checkboxes
+        document.querySelectorAll('.item-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const itemText = this.parentElement.querySelector('span');
+                if (this.checked) {
+                    itemText.style.textDecoration = 'line-through';
+                    itemText.style.color = 'var(--gray)';
+                } else {
+                    itemText.style.textDecoration = 'none';
+                    itemText.style.color = 'var(--dark)';
+                }
+            });
+        });
+
+        // PWA Installation
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installBtn = document.getElementById('installBtn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installPrompt.classList.remove('hidden');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installPrompt.classList.add('hidden');
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        // Service Worker Registration for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('SW registered: ', registration);
+                })
+                .catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
